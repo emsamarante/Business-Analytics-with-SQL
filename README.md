@@ -75,10 +75,11 @@ The questions are ordered by difficulty level from lowest to highest.
 
 Let's break the question in small peaces in order to understand what the questions are asking for us:
 
-> _How many_ -> aggregation using `COUNT()`
-> _unique_ -> `DISTINCT()`
-> _unique customers_ -> `DISTINCT(customer_id)``
-*How many unique customers* -> `COUNT(DISTINCT(customer_id))`*placed at least one completed order* -> it means that you need to filter your query using`WHERE order_status = 'completed'`.
+> - _How many_ -> aggregation using `COUNT()`
+> - _unique_ -> `DISTINCT()`
+> - _unique customers_ -> `DISTINCT(customer_id)``
+> - _How many unique customers_ -> `COUNT(DISTINCT(customer_id))`
+>   _placed at least one completed order_ -> it means that you need to filter your query using`WHERE order_status = 'completed'`.
 
 So, putting everything together, we have:
 
