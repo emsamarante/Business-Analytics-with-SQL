@@ -63,4 +63,28 @@ The second table is Orders table.
 | `shipping_fee`     | Shipping amount charged to the customer.                                                       |
 | `payment_method`   | Payment method used by the customer, such as `credit_card`, `pix`, `boleto`, or `debit_card`.  |
 
-As you can see, the relationship between tables occur through the `customer_id`column.
+> As you can see, the relationship between tables occurs through the `customer_id`column.
+
+I will answer business questions and I will show how to translate them into SQL scripts.
+For revenue questions, I'm going to use this definition:
+`revenue = quantity * unit_price - discount_amount`
+
+The questions are ordered by difficulty level from lowest to highest.
+
+**_Question 01: How many unique customers placed at least one completed order?_**
+
+Let's break the question in small peaces in order to understand what the questions are asking for us:
+
+_How many_ -> aggregation using `COUNT()`
+_unique_ -> `DISTINCT()`
+_unique customers_ -> `DISTINCT(customer_id)``
+*How many unique customers* -> `COUNT(DISTINCT(customer_id))`*placed at least one completed order* -> it means that you need to filter your query using`WHERE order_status = 'completed'`.
+
+So, putting everything together, we have:
+
+```sql
+SELECT
+    COUNT(DISTINCIT(customer_id)) AS number_distinct_customer
+FROM orders
+WHERE order_status = 'completed';
+```
