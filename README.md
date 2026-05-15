@@ -77,9 +77,9 @@ Let's break the question in small peaces in order to understand what the questio
 
 > - _How many_ -> aggregation using `COUNT()`
 > - _unique_ -> `DISTINCT()`
-> - _unique customers_ -> `DISTINCT(customer_id)``
+> - _unique customers_ -> `DISTINCT(customer_id)`
 > - _How many unique customers_ -> `COUNT(DISTINCT(customer_id))`
->   _placed at least one completed order_ -> it means that you need to filter your query using`WHERE order_status = 'completed'`.
+> - _placed at least one completed order_ -> it means that we need to filter our query using `WHERE order_status = 'completed'`.
 
 So, putting everything together, we have:
 
@@ -88,4 +88,49 @@ SELECT
     COUNT(DISTINCIT(customer_id)) AS number_distinct_customer
 FROM orders
 WHERE order_status = 'completed';
+```
+
+**_Question 02: For each product category, calculate the average completed-order revenue per customer_.**
+Use this definition:
+`category revenue per customer = total completed revenue in that category / number of unique customers who completed orders in that category`
+
+> - _For each product category_ -> we need to aggregate by product_category
+> - _calculate the average completed-order revenue per customer_ -> it means that we need calculate the sum of completed-order and divide by the number of unique customer `COUNT(DISTINCT(customer_id))`.
+> - _completed-order revenue_ -> we need to filter using `WHERE order_status = 'completed'`.
+
+```sql
+SELECT
+    o.product_category,
+    ROUND(SUM(o.quantity * o.unit_price - o.discount_amount), 2) AS total_category_revenue,
+    COUNT(DISTINCT o.customer_id) AS unique_customers_completed,
+    ROUND(
+        1.0 * SUM(o.quantity * o.unit_price - o.discount_amount)
+        / COUNT(DISTINCT o.customer_id),
+        2
+    ) AS category_revenue_per_customer
+FROM orders o
+WHERE o.order_status = 'completed'
+GROUP BY o.product_category
+ORDER BY category_revenue_per_customer DESC;
+```
+
+**_Question 03: Which customers placed completed orders in more than one product category?_.**
+
+> - _Which customers placed_ -> `c.customer_id`
+> - _placed completed orders_ -> we need to filter using `WHERE order_status = 'completed'`
+> - _placed ... more than one product category_ -> it means that we need to count unique product categories `COUNT(DISTINCT(o.order_status))` and filter the result.
+> - _To filter a result of aggregation we use `HAVING`_
+
+```sql
+SELECT
+    c.customer_id,
+    c.customer_name,
+    COUNT(DISTINCT (o.product_category)) AS number_categories
+FROM customers c
+JOIN orders o
+    ON c.customer_id = o.customer_id
+WHERE o.order_status = 'completed'
+GROUP BY c.customer_id, c.customer_name
+HAVING COUNT(DISTINCT o.product_category) > 1
+ORDER BY number_categories DESC;
 ```
